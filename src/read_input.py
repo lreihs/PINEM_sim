@@ -1,9 +1,14 @@
 import numpy as np
 import scipy.constants as const
+import os
+
+current_path = os.getcwd()
+end_index = current_path.find('PINEM_sim') + len('PINEM_sim')
+anchor = current_path[:end_index]
+
+f = open(f'{anchor}/docs/input_params.txt', 'r')
 
 params = []
-
-f = open('../docs/input_params', 'r')
 for line in f:
     save_entry = False
     for entry in line.split():
