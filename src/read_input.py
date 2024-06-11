@@ -39,10 +39,13 @@ e = const.elementary_charge
 pi = const.pi
 eV = const.electron_volt
 c = const.speed_of_light
+m_e = const.electron_mass
 
 z_max = z_max_mm*10**-3
 E_el = E_el_kev*10**3*eV
 E_el_fwhm = E_el_fwhm_ev*eV
+k_el = hbar**-1*np.sqrt((2*m_e*E_el)*(1+E_el/(2*m_e*c**2)))
+v_el = (hbar*k_el/m_e) / (1+E_el/(m_e*c**2))
 pulse_duration = pulse_duration_fs*10**-15
 field = field_nm*10**9
 min_field = min_field_nm*10**9

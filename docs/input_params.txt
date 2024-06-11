@@ -2,7 +2,7 @@
 
 Sampling points in real space [10**x] = 7
 width of position window [mm] = 10
-width of time window [#stdevs] = 10
+width of time window [#stdevs] = 50
 
 _______________________________________________________________________
 
