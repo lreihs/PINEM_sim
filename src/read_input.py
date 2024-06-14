@@ -19,10 +19,8 @@ for line in f:
 
 [logN_samp,
  z_max_mm,
- t_max_stdev,
  E_el_kev, 
  E_el_fwhm_ev, 
- pulse_duration_fs,
  lambda_nm, 
  field_nm, 
  min_field_nm, 
@@ -43,17 +41,19 @@ m_e = const.electron_mass
 
 z_max = z_max_mm*10**-3
 E_el = E_el_kev*10**3*eV
-E_el_fwhm = E_el_fwhm_ev*eV
-v_el = c*np.sqrt(1-((m_e*c**2)**2)/((E_el+m_e*c**2)**2))
-pulse_duration = pulse_duration_fs*10**-15
+v0 = c*np.sqrt(1-((m_e*c**2)**2)/((E_el+m_e*c**2)**2))
+lorentz_factor = 1/np.sqrt(1-(v0/c)**2)
+sigma_E = E_el_fwhm_ev*eV*0.1
+sigma_z = hbar*v0/(2*sigma_E)
 field = field_nm*10**9
 min_field = min_field_nm*10**9
 max_field = max_field_nm*10**9
 lambda_opt = lambda_nm*10**-9
-w_opt = 2*pi*c/lambda_opt 
+w_opt = 2*pi*c/lambda_opt
+k_p = w_opt/v0
+LQR= (v0/c)**3*lorentz_factor**3*lambda_opt**2*m_e*c/const.h
 
 z = np.linspace(-z_max/2, z_max/2, N_samp)
-t = np.linspace(-pulse_duration*t_max_stdev/2, pulse_duration*t_max_stdev/2, N_samp)
-w = 2*pi*np.fft.fftshift(np.fft.fftfreq(N_samp, d = pulse_duration*t_max_stdev/N_samp))
-photon_order = w/w_opt 
+k = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(N_samp,d=z_max/N_samp))
+photon_order = k/k_p
 g = 49*10**-9*field

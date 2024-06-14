@@ -1,34 +1,38 @@
 import numpy as np
 from read_input import *
 
-def psi_in(t):
-    return np.exp(-t**2/(2*pulse_duration**2)) 
+def psi0():
+    return (2*np.pi*sigma_z**2)**-0.25
 
-def A(t):
-    return np.exp(-2j * np.abs(g) * np.sin(w_opt*t + np.angle(g)))
+def psi_z_0():
+    return psi0()*np.exp(-z**2/(4*sigma_z**2))
 
-def psi_t_0(t):
-    return A(t) * psi_in(t)
+def psiD_z(tD):
+    LD = v0*tD
+    disp_param = hbar/(2*m_e*lorentz_factor**3*sigma_z**2*v0)
+    aD = 1+1j*disp_param*LD
+    return psi0()*aD**-0.5*np.exp(-(z-LD)**2/(4*sigma_z**2*aD))
 
-def psi_w_0(t):
-    return np.fft.fftshift(np.fft.fft(psi_t_0(t))) 
+def psi1_z(tD):
+    LD = v0*tD
+    return psiD_z(tD)*np.exp(1j*np.abs(g)*np.sin(k_p*(z-LD)+np.angle(g)))
 
-def spec_0(t):
-    psi_squared = np.abs(psi_w_0(t))**2
-    return psi_squared / np.trapz(psi_squared, w)
+def psi1_k(tD):
+    return np.fft.fftshift(np.fft.fft(psi1_z(tD)))
 
-def propagator(delta_t):
-    return np.exp(1j*np.pi*(hbar*w)**2/((hbar*w_opt)**2)*delta_t)
+def spec1(tD):
+    return np.abs(psi1_k(tD))**2
 
-def psi_w_t(t, delta_t):
-    return psi_w_0(t) * propagator(delta_t)
+def psiL_k(tD, L):
+    E=hbar*k*v0
+    return psi1_k(tD)*np.exp(-1j*np.pi*E**2/(hbar*w_opt)**2*L/LQR)
 
-def psi_z_t(t, delta_t):
-    return np.fft.ifft(psi_w_t(t, delta_t))
+def psiL_z(tD, L):
+    return np.fft.ifft(psiL_k(tD, L))
 
-def electron_density(t, delta_t):
-    return np.abs(psi_z_t(t, delta_t))**2
+def electron_density(tD, L):
+    return np.abs(psiL_z(tD, L))**2
 
-def total_prob(t, delta_t):
-    return np.trapz(np.abs(psi_z_t(t, delta_t))**2, t)
+
+
 
